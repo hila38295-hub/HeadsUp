@@ -34,17 +34,6 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
-    private val bgColors = intArrayOf(
-        Color.WHITE, Color.BLACK,
-        0xFFFFF59D.toInt(), 0xFFB9F6CA.toInt(), 0xFF90CAF9.toInt(),
-        0xFFF8BBD0.toInt(), 0xFFFFCC80.toInt(), 0xFFE53935.toInt(), 0xFF5E35B1.toInt()
-    )
-    private val textColors = intArrayOf(
-        Color.BLACK, Color.WHITE,
-        0xFFD32F2F.toInt(), 0xFF1565C0.toInt(), 0xFF2E7D32.toInt(),
-        0xFF6A1B9A.toInt(), 0xFF616161.toInt(), 0xFFFFEB3B.toInt()
-    )
-
     private lateinit var s: Prefs.Settings
     private lateinit var overlay: BannerOverlay
     private val ui = Handler(Looper.getMainLooper())
@@ -67,8 +56,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swReserve: MaterialSwitch
     private lateinit var btnReserveTime: MaterialButton
     private lateinit var etMessage: EditText
-    private lateinit var rowBg: LinearLayout
-    private lateinit var rowText: LinearLayout
+    private lateinit var pickBgHex: TextView
+    private lateinit var pickBgDot: View
+    private lateinit var pickTextHex: TextView
+    private lateinit var pickTextDot: View
     private lateinit var tvShowSec: TextView
     private lateinit var sliderShow: Slider
     private lateinit var tvPreview: TextView
@@ -99,8 +90,10 @@ class MainActivity : AppCompatActivity() {
         swReserve = findViewById(R.id.swReserve)
         btnReserveTime = findViewById(R.id.btnReserveTime)
         etMessage = findViewById(R.id.etMessage)
-        rowBg = findViewById(R.id.rowBg)
-        rowText = findViewById(R.id.rowText)
+        pickBgHex = findViewById(R.id.pickBgHex)
+        pickBgDot = findViewById(R.id.pickBgDot)
+        pickTextHex = findViewById(R.id.pickTextHex)
+        pickTextDot = findViewById(R.id.pickTextDot)
         tvShowSec = findViewById(R.id.tvShowSec)
         sliderShow = findViewById(R.id.sliderShow)
         tvPreview = findViewById(R.id.tvPreview)
@@ -234,8 +227,13 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        buildSwatches(rowBg, bgColors, { s.bgColor }) { s.bgColor = it }
-        buildSwatches(rowText, textColors, { s.textColor }) { s.textColor = it }
+        val onColorChange = { save(); updatePreview() }
+        findViewById<View>(R.id.pickBgRow).setOnClickListener {
+            ColorPicker.show(this, s, editBg = true, onChange = onColorChange)
+        }
+        findViewById<View>(R.id.pickTextRow).setOnClickListener {
+            ColorPicker.show(this, s, editBg = false, onChange = onColorChange)
+        }
 
         sliderShow.value = snap(s.showSec.toFloat(), 1f, 10f, 1f)
         sliderShow.setLabelFormatter { "${it.toInt()}초" }
@@ -275,38 +273,18 @@ class MainActivity : AppCompatActivity() {
             cornerRadius = 16f * d
             setStroke((1 * d).toInt(), 0x26000000)
         }
-    }
-
-    private fun buildSwatches(
-        row: LinearLayout,
-        colors: IntArray,
-        current: () -> Int,
-        onPick: (Int) -> Unit
-    ) {
-        row.removeAllViews()
-        val d = resources.displayMetrics.density
-        val size = (40 * d).toInt()
-        val gap = (10 * d).toInt()
-        val accent = getColor(R.color.accent)
-        val plainStroke = getColor(R.color.swatch_stroke)
-        for (c in colors) {
-            val selected = c == current()
-            val v = View(this)
-            v.background = GradientDrawable().apply {
+        val stroke = getColor(R.color.swatch_stroke)
+        fun dot(view: View, c: Int) {
+            view.background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
                 setColor(c)
-                if (selected) setStroke((4 * d).toInt(), accent)
-                else setStroke((1 * d).toInt(), plainStroke)
+                setStroke((1 * d).toInt(), stroke)
             }
-            v.contentDescription = String.format("#%06X", 0xFFFFFF and c)
-            v.setOnClickListener {
-                onPick(c)
-                save()
-                buildSwatches(row, colors, current, onPick)
-                updatePreview()
-            }
-            row.addView(v, LinearLayout.LayoutParams(size, size).apply { marginEnd = gap })
         }
+        dot(pickBgDot, s.bgColor)
+        dot(pickTextDot, s.textColor)
+        pickBgHex.text = ColorPicker.hex(s.bgColor)
+        pickTextHex.text = ColorPicker.hex(s.textColor)
     }
 
     // ---------- 시작 / 일시정지 / 종료 / 예약 ----------

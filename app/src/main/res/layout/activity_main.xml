@@ -281,39 +281,79 @@
                         android:maxLength="40" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <TextView
-                    style="@style/Label"
-                    android:text="배경색" />
-
-                <HorizontalScrollView
+                <LinearLayout
+                    android:id="@+id/pickBgRow"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none">
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/pick_row"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="12dp">
 
-                    <LinearLayout
-                        android:id="@+id/rowBg"
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="배경색"
+                        android:textColor="@color/ink"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/pickBgHex"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="4dp" />
-                </HorizontalScrollView>
+                        android:layout_marginEnd="10dp"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/ink_sub"
+                        android:textSize="13sp" />
 
-                <TextView
-                    style="@style/Label"
-                    android:text="글자색" />
+                    <View
+                        android:id="@+id/pickBgDot"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp" />
+                </LinearLayout>
 
-                <HorizontalScrollView
+                <LinearLayout
+                    android:id="@+id/pickTextRow"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none">
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/pick_row"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="12dp">
 
-                    <LinearLayout
-                        android:id="@+id/rowText"
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="글자색"
+                        android:textColor="@color/ink"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/pickTextHex"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="4dp" />
-                </HorizontalScrollView>
+                        android:layout_marginEnd="10dp"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/ink_sub"
+                        android:textSize="13sp" />
+
+                    <View
+                        android:id="@+id/pickTextDot"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvShowSec"
