@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.HeadsUp" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">@color/accent_soft</item>
+        <item name="colorOnPrimaryContainer">@color/ink</item>
+        <item name="colorSecondaryContainer">@color/accent_soft</item>
+        <item name="colorOnSecondaryContainer">@color/ink</item>
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Card" parent="Widget.Material3.CardView.Outlined">
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="cardBackgroundColor">@color/card</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="strokeColor">#E3E5E9</item>
+    </style>
+
+    <style name="SectionTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Label">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:textColor">@color/ink_sub</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+</resources>

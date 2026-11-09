@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 다른 앱 위에 배너 띄우기 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- 수업 중 계속 실행 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- 상태 알림(무음)에서 일시정지/종료 버튼 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 정해진 시각에 시작(예약) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="고개 들어!"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.HeadsUp">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".LookUpService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Shows a timed on-screen reminder banner over other apps during a user-started session" />
+        </service>
+
+        <receiver
+            android:name=".ReserveReceiver"
+            android:exported="false" />
+    </application>
+</manifest>

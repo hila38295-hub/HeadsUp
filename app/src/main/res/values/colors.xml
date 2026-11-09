@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#F4F5F7</color>
+    <color name="card">#FFFFFF</color>
+    <color name="ink">#16181D</color>
+    <color name="ink_sub">#5F6672</color>
+    <color name="accent">#2F5BEA</color>
+    <color name="accent_soft">#DCE4FF</color>
+    <color name="stage">#E6E8EC</color>
+    <color name="launcher_bg">#2F5BEA</color>
+</resources>
