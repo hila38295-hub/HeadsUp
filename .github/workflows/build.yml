@@ -19,15 +19,32 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      # GitHub 다운로드 서버가 불안정할 때를 대비해 미러에서도 Gradle을 받아 온다
+      - name: Get Gradle 8.14.3
+        run: |
+          for url in \
+            https://services.gradle.org/distributions/gradle-8.14.3-bin.zip \
+            https://mirrors.cloud.tencent.com/gradle/gradle-8.14.3-bin.zip \
+            https://mirrors.huaweicloud.com/gradle/gradle-8.14.3-bin.zip \
+            https://mirrors.aliyun.com/gradle/distributions/v8.14.3/gradle-8.14.3-bin.zip; do
+            for i in 1 2 3; do
+              echo "Downloading from $url (try $i)"
+              curl -fsSL --connect-timeout 20 --max-time 300 -o /tmp/gradle.zip "$url" && break 2
+              sleep 15
+            done
+          done
+          unzip -q /tmp/gradle.zip -d /tmp
+          echo "/tmp/gradle-8.14.3/bin" >> "$GITHUB_PATH"
+
       - name: Build debug APK
         run: |
-          chmod +x gradlew
-          # 다운로드 서버가 일시적으로 504를 낼 때가 있어 최대 4번 재시도
-          for i in 1 2 3 4; do
-            ./gradlew assembleDebug --no-daemon && break
-            echo "Build attempt $i failed, retrying in 30s..."
-            sleep 30
-            [ "$i" = 4 ] && exit 1
+          gradle --version
+          # 라이브러리 다운로드가 일시적으로 실패할 때를 대비해 재시도
+          for i in 1 2 3 4 5 6; do
+            gradle assembleDebug --no-daemon && break
+            [ "$i" = 6 ] && exit 1
+            echo "Build attempt $i failed, retrying in 60s..."
+            sleep 60
           done
           cp app/build/outputs/apk/debug/app-debug.apk HeadsUp.apk
 
