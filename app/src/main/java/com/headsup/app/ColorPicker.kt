@@ -17,7 +17,7 @@ import java.util.Locale
 /** 배너 배경색·글자색을 고르는 시트: 48색 팔레트 + 색상/채도/밝기 슬라이더 */
 object ColorPicker {
 
-    val PALETTE = intArrayOf(
+    val PALETTE = longArrayOf(
         // 무채색
         0xFFFFFFFF, 0xFFF5F5F5, 0xFFE0E0E0, 0xFFBDBDBD, 0xFF9E9E9E, 0xFF616161, 0xFF303030, 0xFF000000,
         // 파스텔
