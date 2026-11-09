@@ -34,6 +34,8 @@ class LookUpService : Service() {
         const val ACTION_RESUME = "com.headsup.app.RESUME"
         const val ACTION_TOGGLE = "com.headsup.app.TOGGLE"
         const val ACTION_STOP = "com.headsup.app.STOP"
+        const val ACTION_TEST = "com.headsup.app.TEST"
+        const val TEST_DELAY_SEC = 10
 
         private const val CHANNEL_ID = "session_silent"
         private const val NOTIF_ID = 1
@@ -60,6 +62,13 @@ class LookUpService : Service() {
             )
         }
 
+        /** 실제 수업과 같은 경로(포그라운드 서비스)로 10초 뒤 배너를 한 번 띄운다 */
+        fun test(ctx: Context) {
+            ContextCompat.startForegroundService(
+                ctx, Intent(ctx, LookUpService::class.java).setAction(ACTION_TEST)
+            )
+        }
+
         fun send(ctx: Context, action: String) {
             if (!running) return
             ctx.startService(Intent(ctx, LookUpService::class.java).setAction(action))
@@ -70,6 +79,9 @@ class LookUpService : Service() {
     private lateinit var overlay: BannerOverlay
     private val alertRunnable = Runnable { onAlert() }
     private val endRunnable = Runnable { stopSession() }
+    private var testing = false
+    private val testRunnable = Runnable { onTestAlert() }
+    private val testEndRunnable = Runnable { finishTest() }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -86,6 +98,7 @@ class LookUpService : Service() {
             ACTION_RESUME -> resume()
             ACTION_TOGGLE -> if (paused) resume() else pause()
             ACTION_STOP -> stopSession()
+            ACTION_TEST -> runTest()
             else -> if (!running) stopSelf()
         }
         return START_NOT_STICKY
@@ -97,6 +110,7 @@ class LookUpService : Service() {
         val s = Prefs.load(this)
         Prefs.setReservedAt(this, 0)
         handler.removeCallbacksAndMessages(null)
+        testing = false
 
         running = true
         paused = false
@@ -106,6 +120,33 @@ class LookUpService : Service() {
         startForegroundCompat()
         if (endAt > 0) handler.postDelayed(endRunnable, endAt - System.currentTimeMillis())
         scheduleNext()
+    }
+
+    // ---------- 10초 테스트 ----------
+
+    private fun runTest() {
+        testing = true
+        startForegroundCompat()
+        handler.removeCallbacks(testRunnable)
+        handler.removeCallbacks(testEndRunnable)
+        handler.postDelayed(testRunnable, TEST_DELAY_SEC * 1000L)
+    }
+
+    private fun onTestAlert() {
+        val s = Prefs.load(this)
+        overlay.show(s)
+        handler.postDelayed(testEndRunnable, s.showSec.coerceIn(1, 30) * 1000L + 500)
+    }
+
+    private fun finishTest() {
+        testing = false
+        if (running) {
+            updateNotification()
+        } else {
+            overlay.hide()
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+            stopSelf()
+        }
     }
 
     private fun scheduleNext() {
@@ -141,6 +182,7 @@ class LookUpService : Service() {
     }
 
     private fun stopSession() {
+        testing = false
         running = false
         paused = false
         endAt = 0L
@@ -176,7 +218,7 @@ class LookUpService : Service() {
     }
 
     private fun updateNotification() {
-        if (!running) return
+        if (!running && !testing) return
         getSystemService(NotificationManager::class.java).notify(NOTIF_ID, buildNotification())
     }
 
@@ -192,6 +234,17 @@ class LookUpService : Service() {
             this, 0, Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
+        if (testing && !running) {
+            return NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notif)
+                .setContentTitle("테스트 중")
+                .setContentText("${TEST_DELAY_SEC}초 뒤 배너를 한 번 띄워요")
+                .setContentIntent(open)
+                .setOngoing(true)
+                .setSilent(true)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .build()
+        }
         val text = if (endAt > 0) {
             val t = SimpleDateFormat("a h:mm", Locale.KOREA).format(Date(endAt))
             "$t 에 자동 종료"

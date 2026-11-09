@@ -317,7 +317,14 @@
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="실제로 띄워보기" />
+                    android:text="지금 띄워보기" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTest"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="10초 뒤 띄워보기 (다른 앱에서 확인)" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

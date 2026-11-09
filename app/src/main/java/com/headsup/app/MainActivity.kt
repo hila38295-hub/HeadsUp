@@ -244,6 +244,16 @@ class MainActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnPreview).setOnClickListener {
             if (ensureOverlayPermission()) overlay.show(s)
         }
+        findViewById<MaterialButton>(R.id.btnTest).setOnClickListener {
+            if (!ensureOverlayPermission()) return@setOnClickListener
+            save()
+            LookUpService.test(this)
+            Toast.makeText(
+                this,
+                "${LookUpService.TEST_DELAY_SEC}초 안에 다른 앱으로 이동해 보세요",
+                Toast.LENGTH_LONG
+            ).show()
+        }
         updatePreview()
     }
 
@@ -426,7 +436,7 @@ class MainActivity : AppCompatActivity() {
                 tvStatus.text = "대기 중"
                 tvStatusSub.text = if (s.reserveOn) {
                     "${fmtDateTime(nextReserveMillis())}에 시작하도록 예약할 수 있어요"
-                } else "시작을 누르면 바로 알림이 시작돼요"
+                } else "시작하면 ${fmtSec(s.minSec)}~${fmtSec(s.maxSec)} 뒤 첫 배너가 떠요"
                 btnPrimary.text = if (s.reserveOn) "예약하기" else "시작"
                 btnSecondary.visibility = View.GONE
             }
