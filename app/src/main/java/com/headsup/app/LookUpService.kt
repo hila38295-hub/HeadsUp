@@ -56,6 +56,19 @@ class LookUpService : Service() {
         var alertCount = 0
             private set
 
+        /** 띄우려 했지만 화면에 보이지 않은 횟수와 마지막 이유 */
+        @Volatile
+        var missedCount = 0
+            private set
+
+        @Volatile
+        var lastMissReason: String? = null
+            private set
+
+        /** 10초 테스트 결과: null = 아직 없음 */
+        @Volatile
+        var lastTestResult: String? = null
+
         fun start(ctx: Context) {
             ContextCompat.startForegroundService(
                 ctx, Intent(ctx, LookUpService::class.java).setAction(ACTION_START)
@@ -115,6 +128,8 @@ class LookUpService : Service() {
         running = true
         paused = false
         alertCount = 0
+        missedCount = 0
+        lastMissReason = null
         endAt = if (s.useDuration) System.currentTimeMillis() + s.durationMin * 60_000L else 0L
 
         startForegroundCompat()
@@ -126,6 +141,7 @@ class LookUpService : Service() {
 
     private fun runTest() {
         testing = true
+        lastTestResult = null
         startForegroundCompat()
         handler.removeCallbacks(testRunnable)
         handler.removeCallbacks(testEndRunnable)
@@ -134,7 +150,10 @@ class LookUpService : Service() {
 
     private fun onTestAlert() {
         val s = Prefs.load(this)
-        overlay.show(s)
+        overlay.show(s) { visible ->
+            lastTestResult = if (visible) "테스트 배너가 정상적으로 표시됐어요"
+            else "테스트 배너가 표시되지 않았어요: ${overlay.lastFailure}"
+        }
         handler.postDelayed(testEndRunnable, s.showSec.coerceIn(1, 30) * 1000L + 500)
     }
 
@@ -161,8 +180,14 @@ class LookUpService : Service() {
         if (endAt > 0 && System.currentTimeMillis() >= endAt) {
             stopSession(); return
         }
-        overlay.show(Prefs.load(this))
-        alertCount++
+        overlay.show(Prefs.load(this)) { visible ->
+            if (visible) {
+                alertCount++
+            } else {
+                missedCount++
+                lastMissReason = overlay.lastFailure
+            }
+        }
         scheduleNext()
     }
 

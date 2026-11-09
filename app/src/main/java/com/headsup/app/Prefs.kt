@@ -18,7 +18,7 @@ object Prefs {
         var message: String = DEFAULT_MESSAGE,
         var bgColor: Int = Color.WHITE,
         var textColor: Int = Color.BLACK,
-        var showSec: Int = 3,
+        var showSec: Int = 5,
         var reserveOn: Boolean = false,
         var reserveHour: Int = 9,
         var reserveMinute: Int = 0,

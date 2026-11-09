@@ -403,7 +403,17 @@ class MainActivity : AppCompatActivity() {
 
     // ---------- 상태 표시 ----------
 
+    private var shownTestResult: String? = null
+
     private fun refreshStatus() {
+        val test = LookUpService.lastTestResult
+        if (test != null && test != shownTestResult) {
+            shownTestResult = test
+            LookUpService.lastTestResult = null
+            AlertDialog.Builder(this).setTitle("10초 테스트 결과").setMessage(test)
+                .setPositiveButton("확인", null).show()
+        }
+
         val now = System.currentTimeMillis()
         var reservedAt = Prefs.reservedAt(this)
         if (reservedAt in 1 until now - 60_000) { // 지나간 예약 정리
@@ -420,7 +430,11 @@ class MainActivity : AppCompatActivity() {
                     val left = ((endAt - now).coerceAtLeast(0)) / 1000
                     "남은 수업 시간 ${fmtClock(left)} · ${fmtTime(endAt)} 종료"
                 } else "종료를 누를 때까지 계속 알려드려요"
-                tvStatusSub.text = "$line1\n지금까지 ${LookUpService.alertCount}번 알림"
+                var line2 = "지금까지 ${LookUpService.alertCount}번 표시됨"
+                if (LookUpService.missedCount > 0) {
+                    line2 += "\n${LookUpService.missedCount}번은 표시되지 못함: ${LookUpService.lastMissReason ?: "알 수 없음"}"
+                }
+                tvStatusSub.text = "$line1\n$line2"
                 btnPrimary.text = if (paused) "재개" else "일시정지"
                 btnSecondary.text = "종료"
                 btnSecondary.visibility = View.VISIBLE

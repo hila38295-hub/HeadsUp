@@ -28,8 +28,20 @@ class BannerOverlay(context: Context) {
     private val hideRunnable = Runnable { hide() }
     private var view: View? = null
 
-    fun show(s: Prefs.Settings): Boolean {
-        if (!Settings.canDrawOverlays(ctx)) return false
+    /** 마지막으로 표시에 실패한 이유 (진단용) */
+    var lastFailure: String? = null
+        private set
+
+    /**
+     * 배너를 띄운다. [onResult]는 잠시 뒤 실제로 화면에 보였는지(true) 아닌지(false)를 알려준다.
+     * 설정 앱 같은 보안 화면 위에서는 시스템이 배너를 숨기기 때문에 이 확인이 필요하다.
+     */
+    fun show(s: Prefs.Settings, onResult: ((Boolean) -> Unit)? = null): Boolean {
+        if (!Settings.canDrawOverlays(ctx)) {
+            lastFailure = "'다른 앱 위에 표시' 권한이 꺼져 있음"
+            onResult?.invoke(false)
+            return false
+        }
         hide()
 
         val d = ctx.resources.displayMetrics.density
@@ -82,15 +94,25 @@ class BannerOverlay(context: Context) {
         try {
             wm.addView(container, lp)
         } catch (e: Exception) {
+            lastFailure = "배너 창을 만들지 못함 (${e.javaClass.simpleName})"
+            onResult?.invoke(false)
             return false
         }
         view = container
 
-        tv.alpha = 0f
-        tv.translationY = -40f * d
-        tv.animate().alpha(1f).translationY(0f).setDuration(220).start()
-
+        // 투명도 애니메이션은 쓰지 않는다: 백그라운드에서 애니메이션이 건너뛰어지면
+        // 배너가 투명한 채로 남아 안 보일 수 있기 때문.
         handler.postDelayed(hideRunnable, s.showSec.coerceIn(1, 30) * 1000L)
+
+        if (onResult != null) {
+            handler.postDelayed({
+                val visible = container.isAttachedToWindow &&
+                    container.windowVisibility == View.VISIBLE &&
+                    container.isShown
+                if (!visible) lastFailure = "시스템이 배너를 숨김 (설정·설치 화면 등)"
+                onResult(visible)
+            }, 700)
+        }
         return true
     }
 
