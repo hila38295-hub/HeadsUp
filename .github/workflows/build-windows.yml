@@ -1,0 +1,73 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/build-windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # GitHub 다운로드 서버가 불안정할 때를 대비해 미러로 재시도
+      - name: Install
+        run: |
+          for i in 1 2 3; do
+            npm install --no-audit --no-fund && break
+            [ "$i" = 3 ] && exit 1
+            echo "Install attempt $i failed, retrying with mirror..."
+            export ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+            rm -rf node_modules
+            sleep 20
+          done
+
+      - name: Build installer
+        run: |
+          for i in 1 2 3; do
+            npx electron-builder --win nsis --x64 --publish never && break
+            [ "$i" = 3 ] && exit 1
+            echo "Build attempt $i failed, retrying with mirror..."
+            export ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+            export ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-binaries/
+            sleep 20
+          done
+          ls -la dist
+
+      # 실제 윈도우에서 앱을 켜서 화면을 캡처해 본다
+      - name: Smoke test
+        run: |
+          mkdir -p smoke
+          export SMOKE_OUT="$(cygpath -w "$PWD/smoke")"
+          timeout 90 ./dist/win-unpacked/HeadsUp.exe --smoke || echo "exit code $?"
+          ls -la smoke
+          cat smoke/log.txt || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke
+          path: desktop/smoke
+
+      - name: Publish
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: windows
+          name: HeadsUp for Windows
+          files: desktop/dist/HeadsUp-Setup.exe
+          make_latest: false

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+<title>고개 들어!</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>고개 들어!</h1>
+    <button id="btnMore" class="icon" title="더보기" aria-label="더보기">⋯</button>
+  </header>
+
+  <!-- 상태 -->
+  <section class="card">
+    <div id="stTitle" class="st-title">대기 중</div>
+    <div id="stSub" class="st-sub"></div>
+    <div class="btn-row">
+      <button id="btnPrimary" class="primary">시작</button>
+      <button id="btnSecondary" class="outline hidden">종료</button>
+    </div>
+  </section>
+
+  <!-- 간격 -->
+  <section class="card">
+    <div class="sec-title">알림 간격</div>
+    <div id="rangeLabel" class="sub"></div>
+    <label class="slider-row"><span>최소</span><input id="minSec" type="range" min="60" max="600" step="10"><b id="minLabel"></b></label>
+    <label class="slider-row"><span>최대</span><input id="maxSec" type="range" min="60" max="600" step="10"><b id="maxLabel"></b></label>
+  </section>
+
+  <!-- 수업 시간 -->
+  <section class="card">
+    <label class="switch-row">
+      <span class="sec-title">수업 시간 후 자동 종료</span>
+      <input id="useDuration" type="checkbox" class="switch">
+    </label>
+    <div id="durationLabel" class="sub"></div>
+    <label id="durationRow" class="slider-row"><span>시간</span><input id="durationMin" type="range" min="10" max="240" step="5"><b id="durLabel"></b></label>
+  </section>
+
+  <!-- 예약 -->
+  <section class="card">
+    <label class="switch-row">
+      <span class="sec-title">시작 시간 예약</span>
+      <input id="reserveOn" type="checkbox" class="switch">
+    </label>
+    <div id="reserveRow" class="reserve-row">
+      <input id="reserveTime" type="time">
+      <span class="sub">앱이 켜져 있으면(작업 표시줄 아이콘) 이 시각에 시작해요</span>
+    </div>
+  </section>
+
+  <!-- 배너 -->
+  <section class="card">
+    <div class="sec-title">배너</div>
+    <div class="stage"><div id="preview" class="preview">교수님을 바라보세요!</div></div>
+    <label class="field">
+      <span>문구</span>
+      <input id="message" type="text" maxlength="40" placeholder="교수님을 바라보세요!">
+    </label>
+    <button id="pickBg" class="pick-row"><span>배경색</span><code id="bgHex"></code><i id="bgDot" class="dot"></i></button>
+    <button id="pickText" class="pick-row"><span>글자색</span><code id="textHex"></code><i id="textDot" class="dot"></i></button>
+    <label class="slider-row"><span>표시</span><input id="showSec" type="range" min="1" max="10" step="1"><b id="showLabel"></b></label>
+    <div class="btn-col">
+      <button id="btnPreview" class="outline">지금 띄워보기</button>
+      <button id="btnTest" class="tonal">10초 뒤 띄워보기 (다른 프로그램에서 확인)</button>
+    </div>
+  </section>
+
+  <p class="foot">배너는 클릭이 통과돼서 아래 프로그램을 방해하지 않아요. 창을 닫아도 오른쪽 아래 작업 표시줄 아이콘에서 계속 실행돼요.</p>
+</main>
+
+<!-- 색 선택 -->
+<div id="colorModal" class="modal hidden">
+  <div class="sheet">
+    <div class="sheet-title" id="cpTitle">배경색</div>
+    <div class="stage"><div id="cpPreview" class="preview">교수님을 바라보세요!</div></div>
+    <div id="cpWarn" class="warn hidden">⚠️ 글자와 배경이 비슷해서 잘 안 보일 수 있어요</div>
+    <div class="label">기본 색</div>
+    <div id="cpGrid" class="grid"></div>
+    <label class="custom-row">
+      <span>직접 고르기</span>
+      <code id="cpHex"></code>
+      <input id="cpCustom" type="color">
+    </label>
+    <button id="cpDone" class="primary wide">완료</button>
+  </div>
+</div>
+
+<!-- 더보기 -->
+<div id="moreModal" class="modal hidden">
+  <div class="sheet">
+    <div class="sheet-title">더보기</div>
+    <div class="label">테마</div>
+    <div class="seg" id="themeSeg">
+      <button data-theme="light">라이트</button>
+      <button data-theme="dark">다크</button>
+      <button data-theme="system">시스템</button>
+    </div>
+    <label class="switch-row" style="margin-top:18px">
+      <span>윈도우를 켜면 자동으로 실행</span>
+      <input id="autoLaunch" type="checkbox" class="switch">
+    </label>
+    <div class="label" style="margin-top:18px">문의</div>
+    <div class="contact">앱이 이상하면 정연이한테 말해 주세요 🙌</div>
+    <div class="sub">아래 버튼으로 기기 정보를 복사해서 같이 보내 주면 버그를 더 빨리 고칠 수 있어요.</div>
+    <button id="btnCopy" class="tonal wide">기기 정보 복사</button>
+    <button id="btnGuide" class="outline wide">사용법 다시 보기</button>
+    <button id="btnMoreClose" class="text wide">닫기</button>
+    <div id="version" class="version"></div>
+  </div>
+</div>
+
+<!-- 첫 실행 안내 -->
+<div id="guideModal" class="modal hidden">
+  <div class="sheet guide">
+    <div id="gEmoji" class="g-emoji"></div>
+    <div id="gTitle" class="g-title"></div>
+    <div id="gBody" class="g-body"></div>
+    <div id="gDots" class="g-dots"></div>
+    <div class="btn-row">
+      <button id="gSkip" class="text">건너뛰기</button>
+      <button id="gNext" class="primary">다음</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>
