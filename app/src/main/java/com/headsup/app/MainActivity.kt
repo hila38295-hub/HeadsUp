@@ -112,6 +112,11 @@ class MainActivity : AppCompatActivity() {
 
         btnPrimary.setOnClickListener { onPrimary() }
         btnSecondary.setOnClickListener { onSecondary() }
+        findViewById<View>(R.id.btnMore).setOnClickListener { MoreAndGuide.showMore(this) }
+
+        if (savedInstanceState == null && !Prefs.onboarded(this)) {
+            MoreAndGuide.showGuide(this)
+        }
     }
 
     override fun onResume() {
@@ -283,6 +288,7 @@ class MainActivity : AppCompatActivity() {
         val size = (40 * d).toInt()
         val gap = (10 * d).toInt()
         val accent = getColor(R.color.accent)
+        val plainStroke = getColor(R.color.swatch_stroke)
         for (c in colors) {
             val selected = c == current()
             val v = View(this)
@@ -290,7 +296,7 @@ class MainActivity : AppCompatActivity() {
                 shape = GradientDrawable.OVAL
                 setColor(c)
                 if (selected) setStroke((4 * d).toInt(), accent)
-                else setStroke((1 * d).toInt(), 0x40000000)
+                else setStroke((1 * d).toInt(), plainStroke)
             }
             v.contentDescription = String.format("#%06X", 0xFFFFFF and c)
             v.setOnClickListener {

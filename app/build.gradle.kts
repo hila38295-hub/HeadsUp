@@ -13,8 +13,8 @@ android {
         applicationId = "com.headsup.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 3
+        versionName = "1.2"
     }
 
     // 빌드할 때마다 같은 키로 서명해야 업데이트가 기존 앱 위에 설치된다

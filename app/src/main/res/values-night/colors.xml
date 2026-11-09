@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#111317</color>
+    <color name="card">#1B1E24</color>
+    <color name="card_stroke">#2A2E36</color>
+    <color name="ink">#ECEEF2</color>
+    <color name="ink_sub">#A0A7B4</color>
+    <color name="accent">#8AA4FF</color>
+    <color name="accent_soft">#26314F</color>
+    <color name="stage">#262A31</color>
+    <color name="swatch_stroke">#66FFFFFF</color>
+</resources>

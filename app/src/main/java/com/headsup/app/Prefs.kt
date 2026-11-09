@@ -68,6 +68,12 @@ object Prefs {
     fun reservedAt(c: Context): Long = sp(c).getLong("reservedAt", 0L)
     fun setReservedAt(c: Context, v: Long) = sp(c).edit().putLong("reservedAt", v).apply()
 
+    fun themeMode(c: Context): Int = sp(c).getInt("themeMode", 0)
+    fun setThemeMode(c: Context, v: Int) = sp(c).edit().putInt("themeMode", v).apply()
+
+    fun onboarded(c: Context): Boolean = sp(c).getBoolean("onboarded", false)
+    fun setOnboarded(c: Context) = sp(c).edit().putBoolean("onboarded", true).apply()
+
     fun askedNotif(c: Context): Boolean = sp(c).getBoolean("askedNotif", false)
     fun setAskedNotif(c: Context) = sp(c).edit().putBoolean("askedNotif", true).apply()
 }
