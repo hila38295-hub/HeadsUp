@@ -119,6 +119,15 @@ object MoreAndGuide {
             showGuide(activity)
         }
 
+        // 업데이트 내역
+        v.findViewById<MaterialButton>(R.id.btnChangelog).apply {
+            text = "업데이트 내역 (v${versionName(activity)})"
+            setOnClickListener {
+                sheet.dismiss()
+                Changelog.showHistory(activity)
+            }
+        }
+
         v.findViewById<TextView>(R.id.tvVersion).text = "고개 들어! v${versionName(activity)}"
         sheet.show()
     }

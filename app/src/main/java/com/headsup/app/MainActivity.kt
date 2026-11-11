@@ -107,8 +107,9 @@ class MainActivity : AppCompatActivity() {
         btnSecondary.setOnClickListener { onSecondary() }
         findViewById<View>(R.id.btnMore).setOnClickListener { MoreAndGuide.showMore(this) }
 
-        if (savedInstanceState == null && !Prefs.onboarded(this)) {
-            MoreAndGuide.showGuide(this)
+        if (savedInstanceState == null) {
+            if (!Prefs.onboarded(this)) MoreAndGuide.showGuide(this)
+            Changelog.checkUpdated(this)
         }
     }
 

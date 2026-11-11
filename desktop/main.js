@@ -26,6 +26,7 @@ const DEFAULTS = {
   onboarded: false,
   autoLaunch: false,
   trayHintShown: false,
+  lastSeenVersion: '',
 };
 
 const SMOKE = process.argv.includes('--smoke');
@@ -402,6 +403,13 @@ async function runSmoke() {
     await mainWin.webContents.executeJavaScript('window.__smokeOpenMore && window.__smokeOpenMore()');
     await wait(600);
     await shot(mainWin, '3_more.png');
+    log.push('changelog entries: ' + await mainWin.webContents.executeJavaScript('window.__smokeOpenChangelog ? window.__smokeOpenChangelog() : -1'));
+    await wait(600);
+    await shot(mainWin, '3b_changelog.png');
+    log.push('update popup: ' + await mainWin.webContents.executeJavaScript('window.__smokeShowUpdated ? window.__smokeShowUpdated() : -1'));
+    await wait(600);
+    await shot(mainWin, '3c_updated.png');
+    await mainWin.webContents.executeJavaScript('window.__smokeCloseAll && window.__smokeCloseAll()');
     await mainWin.webContents.executeJavaScript('window.__smokeOpenColor && window.__smokeOpenColor()');
     await wait(600);
     await shot(mainWin, '4_color.png');

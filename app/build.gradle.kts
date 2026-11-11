@@ -13,8 +13,8 @@ android {
         applicationId = "com.headsup.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 5
+        versionName = "1.4"
     }
 
     // 빌드할 때마다 같은 키로 서명해야 업데이트가 기존 앱 위에 설치된다
@@ -25,6 +25,10 @@ android {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

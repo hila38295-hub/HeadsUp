@@ -74,6 +74,9 @@ object Prefs {
     fun onboarded(c: Context): Boolean = sp(c).getBoolean("onboarded", false)
     fun setOnboarded(c: Context) = sp(c).edit().putBoolean("onboarded", true).apply()
 
+    fun lastSeenVersion(c: Context): Int = sp(c).getInt("lastSeenVersion", 0)
+    fun setLastSeenVersion(c: Context, v: Int) = sp(c).edit().putInt("lastSeenVersion", v).apply()
+
     fun askedNotif(c: Context): Boolean = sp(c).getBoolean("askedNotif", false)
     fun setAskedNotif(c: Context) = sp(c).edit().putBoolean("askedNotif", true).apply()
 }

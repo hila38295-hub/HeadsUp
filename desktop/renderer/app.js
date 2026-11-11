@@ -19,6 +19,7 @@ const GUIDE = [
 ];
 
 let S = null;
+let VERSION = '';
 let ST = { running: false, paused: false, endAt: 0, alertCount: 0, reservedAt: 0, now: Date.now() };
 let editingBg = true;
 
@@ -164,6 +165,38 @@ function renderGuide() {
 function openGuide() { gi = 0; renderGuide(); $('guideModal').classList.remove('hidden'); }
 function closeGuide() { $('guideModal').classList.add('hidden'); save({ onboarded: true }); }
 
+// ---------- 업데이트 ----------
+function openChangelog() {
+  const list = $('clList');
+  list.innerHTML = '';
+  (window.CHANGELOG || []).forEach((e) => {
+    const h = document.createElement('div');
+    h.className = 'cl-ver' + (e.version === VERSION ? ' now' : '');
+    const b = document.createElement('b'); b.textContent = `v${e.version}`;
+    const sp = document.createElement('span'); sp.textContent = e.date + (e.version === VERSION ? ' · 지금 버전' : '');
+    h.append(b, sp);
+    const ul = document.createElement('ul'); ul.className = 'cl-list';
+    e.items.forEach((t) => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+    list.append(h, ul);
+  });
+  $('changelogModal').classList.remove('hidden');
+  return (window.CHANGELOG || []).length;
+}
+
+function showUpdated() {
+  $('updatedBody').textContent =
+    `고개 들어!가 v${VERSION}(으)로 업데이트됐어요.\n무엇이 바뀌었는지는 오른쪽 위 ⋯ 더보기 → 업데이트 내역에서 볼 수 있어요.`;
+  $('updatedModal').classList.remove('hidden');
+  return true;
+}
+
+/** 처음 설치면 기록만, 업데이트 후 첫 실행이면 팝업 */
+function checkUpdated() {
+  const last = S.lastSeenVersion || '';
+  save({ lastSeenVersion: VERSION });
+  if (S.onboarded && last !== VERSION) showUpdated();
+}
+
 // ---------- 이벤트 ----------
 function bind() {
   const num = (id) => Number($(id).value);
@@ -220,11 +253,16 @@ function bind() {
   $('btnCopy').addEventListener('click', async () => { await api.copyInfo(); toast('복사했어요. 카톡에 붙여넣어 보내 주세요'); });
   $('btnGuide').addEventListener('click', () => { $('moreModal').classList.add('hidden'); openGuide(); });
 
+  $('btnChangelog').addEventListener('click', () => { $('moreModal').classList.add('hidden'); openChangelog(); });
+  $('updatedOk').addEventListener('click', () => $('updatedModal').classList.add('hidden'));
+  $('updatedView').addEventListener('click', () => { $('updatedModal').classList.add('hidden'); openChangelog(); });
+  $('clClose').addEventListener('click', () => $('changelogModal').classList.add('hidden'));
+
   $('gSkip').addEventListener('click', closeGuide);
   $('gNext').addEventListener('click', () => { if (gi === GUIDE.length - 1) closeGuide(); else { gi++; renderGuide(); } });
 
   // 바깥 클릭으로 닫기 (안내 창은 제외)
-  ['colorModal', 'moreModal'].forEach((id) => $(id).addEventListener('click', (e) => {
+  ['colorModal', 'moreModal', 'changelogModal'].forEach((id) => $(id).addEventListener('click', (e) => {
     if (e.target.id === id) $(id).classList.add('hidden');
   }));
 
@@ -235,16 +273,21 @@ function bind() {
 window.__smokeCloseGuide = () => closeGuide();
 window.__smokeOpenMore = () => openMore();
 window.__smokeOpenColor = () => { $('moreModal').classList.add('hidden'); openColor(true); };
+window.__smokeOpenChangelog = () => { $('moreModal').classList.add('hidden'); return openChangelog(); };
+window.__smokeShowUpdated = () => { window.__smokeCloseAll(); VERSION = VERSION || '?'; return showUpdated(); };
 window.__smokeCloseAll = () => document.querySelectorAll('.modal').forEach((m) => m.classList.add('hidden'));
 
 (async () => {
   const d = await api.get();
   S = d.settings; ST = d.status;
+  VERSION = d.version;
   $('version').textContent = `고개 들어! for Windows v${d.version}`;
+  $('btnChangelog').textContent = `업데이트 내역 (v${d.version})`;
   $('message').value = S.message;
   buildPalette();
   bind();
   renderSettings();
   renderStatus();
   if (!S.onboarded) openGuide();
+  checkUpdated();
 })();

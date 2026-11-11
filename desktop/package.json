@@ -1,7 +1,7 @@
 {
   "name": "headsup-desktop",
   "productName": "HeadsUp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "수업 중 랜덤한 순간에 교수님을 볼 타이밍을 알려 주는 배너 앱",
   "main": "main.js",
   "author": "hila38295-hub",

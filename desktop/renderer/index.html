@@ -109,6 +109,7 @@
     <div class="sub">아래 버튼으로 기기 정보를 복사해서 같이 보내 주면 버그를 더 빨리 고칠 수 있어요.</div>
     <button id="btnCopy" class="tonal wide">기기 정보 복사</button>
     <button id="btnGuide" class="outline wide">사용법 다시 보기</button>
+    <button id="btnChangelog" class="outline wide">업데이트 내역</button>
     <button id="btnMoreClose" class="text wide">닫기</button>
     <div id="version" class="version"></div>
   </div>
@@ -128,7 +129,30 @@
   </div>
 </div>
 
+<!-- 업데이트됐어요 -->
+<div id="updatedModal" class="modal hidden">
+  <div class="sheet guide">
+    <div class="g-emoji">🎉</div>
+    <div class="g-title">업데이트 완료!</div>
+    <div id="updatedBody" class="g-body" style="min-height:0"></div>
+    <div class="btn-row">
+      <button id="updatedView" class="outline">업데이트 내역 보기</button>
+      <button id="updatedOk" class="primary">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 업데이트 내역 -->
+<div id="changelogModal" class="modal hidden">
+  <div class="sheet">
+    <div class="sheet-title">업데이트 내역</div>
+    <div id="clList"></div>
+    <button id="clClose" class="primary wide">닫기</button>
+  </div>
+</div>
+
 <div id="toast" class="toast hidden"></div>
+<script src="changelog.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
